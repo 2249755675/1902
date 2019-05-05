@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+		<style>
+			#f{
+				width:50px;
+				height:50px;
+				background:black;
+				position:absolute;
+				left: 300px;
+				top:0;
+				color:red;
+			}
+			#s{
+				width:50px;
+				height:50px;
+				background:springgreen;
+				position:absolute;
+				color:black;
+				left:350px;
+			}
+		</style>
+	</head>
+	<body>
+		<div id="f">父亲</div>
+		<div id="s">儿子</div>
+		<script>
+
+			window.onload = function(){
+				new Father('f').drag();
+				new Son('s').drag();
+			}
+			function Father(id){
+				this.div = document.getElementById(id);
+			}
+			Father.prototype.drag = function(){
+				this.div.onmousedown = function(evt){
+					this.down(evt);
+					document.onmousemove = function(evt){
+						this.move(evt);
+					}.bind(this)
+					document.onmouseup = function(){
+						this.up();
+					}.bind(this)
+				}.bind(this)
+			}
+			Father.prototype.down = function(evt){
+				var evt = evt || window.event;
+				this.offx = evt.offsetX;
+				this.offy = evt.offsetY;
+			}
+			Father.prototype.move = function(evt){
+				var evt = evt || window.event;
+				this.div.style.left = evt.pageX - this.offx + 'px';
+				this.div.style.top = evt.pageY - this.offy + 'px';
+			}
+			Father.prototype.up = function(){
+				document.onmousemove = null;
+			}
+			
+			function Son(id){
+				Father.apply(this,arguments);
+			}
+			Son.prototype = new Father();
+			Son.prototype.move = function(evt){
+				var evt = evt || window.event;
+				var x = evt.pageX - this.offx;
+				var y = evt.pageY - this.offy;
+				if(x < 0){
+					x = 0;
+				}else if(x > window.innerWidth - this.div.offsetWidth){
+					x = window.innerWidth - this.div.offsetWidth;
+				}
+				if(y < 0){
+					y = 0;
+				}else if(y > window.innerHeight - this.div.offsetHeight){
+					y = window.innerHeight - this.div.offsetHeight;
+				}
+				this.div.style.left = x + 'px';
+				this.div.style.top = y + 'px';
+			}
+		</script>
+	</body>
+</html>
